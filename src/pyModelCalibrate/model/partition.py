@@ -25,11 +25,11 @@ def get_uniform_mass_partitions(probs: list, labels: list, partition_num: int, d
 
     samples = [(prob, label) for prob, label in zip(probs, labels)]
 
-    sorted_samples = sorted(samples, key= lambda x: x[0], reverse=decreasing)
+    samples.sort(key= lambda x: x[0], reverse= decreasing)
 
     partition_ids = [int(iter/partition_num)  for iter in range(len(probs))]
 
-    sorted_probs, sorted_labels = zip(*sorted_samples)
+    sorted_probs, sorted_labels = zip(*samples)
 
     return sorted_probs, sorted_labels, partition_ids
 
