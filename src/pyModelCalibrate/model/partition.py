@@ -5,6 +5,7 @@ This file contains implementation of following uniform partition scheme:
 3. equal bin count partition
 """
 
+
 def get_uniform_mass_partitions(probs: list, labels: list, partition_num: int, decreasing: bool = False) -> tuple:
     """
     Given a list of probabilities `probs` and a list of class labels `labels`, this function partition the probabilities
@@ -25,13 +26,14 @@ def get_uniform_mass_partitions(probs: list, labels: list, partition_num: int, d
 
     samples = [(prob, label) for prob, label in zip(probs, labels)]
 
-    samples.sort(key= lambda x: x[0], reverse= decreasing)
+    samples.sort(key=lambda x: x[0], reverse=decreasing)
 
-    partition_ids = [int(iter/partition_num)  for iter in range(len(probs))]
+    partition_ids = [int(iter / partition_num) for iter in range(len(probs))]
 
     sorted_probs, sorted_labels = zip(*samples)
 
     return sorted_probs, sorted_labels, partition_ids
+
 
 def get_uniform_mass_partitions(probs: list, labels: list, partition_num: int, decreasing: bool = False) -> tuple:
     """
@@ -45,31 +47,57 @@ def get_uniform_mass_partitions(probs: list, labels: list, partition_num: int, d
 
     samples = [(prob, label) for prob, label in zip(probs, labels)]
 
-    sorted_samples = sorted(samples, key= lambda x: x[0], reverse=decreasing)
+    sorted_samples = sorted(samples, key=lambda x: x[0], reverse=decreasing)
 
-    partition_ids = [int(iter/partition_num)  for iter in range(len(probs))]
+    partition_ids = [int(iter / partition_num) for iter in range(len(probs))]
 
     sorted_probs, sorted_labels = zip(*sorted_samples)
 
     return sorted_probs, sorted_labels, partition_ids
 
-def get_uniform_width_partitions(probs: list, labels: list, width: float) -> tuple:
-    """
 
-    :param probs:
-    :param labels:
-    :param width:
-    :return:
+def get_uniform_width_partitions(probs: list, labels: list, width: float = None, partition_num: int = None,
+                                 decreasing: bool = False) -> tuple:
+    """
+    Given a list of probabilities `probs` and a list of class labels `labels`, this function partition the probabilities
+    into equal-width partitions and return a tuple containing the sorted probabilities, sorted labels, and partition IDs
+    for each probability. The probabilities and labels are sorted in increasing order by default, but this can be
+    changed by setting the `decreasing` parameter to False.
+
+    By default, it uses width parameter if both width and partition_num is provided, otherwise it computes width if only
+    partition_num is provided.
+
+    Parameters:
+    - probs (list): A list of probabilities.
+    - labels (list): A list of labels corresponding to the probabilities in `probs`.
+    - partition_num (int): The number of equal-width partitions to create.
+    - width (float): width of each partition
+    - decreasing (bool): A flag indicating whether to sort the probabilities and labels in decreasing order. Default is
+                        False.
+
+    Returns:
+    - tuple: A tuple containing the sorted probabilities, sorted labels, and partition IDs for each probability.
     """
 
     samples = [(prob, label) for prob, label in zip(probs, labels)]
 
-    sorted_samples = sorted(samples, key= lambda x: x[0])
+    samples.sort(key=lambda x: x[0], reverse=decreasing)
 
-    partition_ids = 
-    
-    sorted_probs, sorted_labels = zip(*sorted_samples)
+    sorted_probs, sorted_labels = zip(*samples)
+
+    # Compute the minimum and maximum probability values
+    min_prob = min(sorted_probs)
+    max_prob = max(sorted_probs)
+
+    # Compute the width of each partition
+    if width is None & partition_num is None:
+        raise ValueError(
+            'Either pass width of the partition or the number of partitions in which samples needs to be partitioned')
+    elif width is None:
+        partition_width = (max_prob - min_prob) / partition_num
+    else:
+        partition_width = width
+
+    partition_ids = [int((prob - min_prob) / partition_width) for prob in sorted_probs]
 
     return sorted_probs, sorted_labels, partition_ids
-        
-
