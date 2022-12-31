@@ -13,6 +13,6 @@ def strict_lower_bound(x: float, arr: list) -> int:
         else:
             end = mid - 1
 
-    return arr[end]
+    return end
             
     
