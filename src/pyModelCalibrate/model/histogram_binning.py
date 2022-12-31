@@ -1,3 +1,4 @@
+from statistics import mean
 from partition import *
 
 
@@ -5,9 +6,12 @@ class Bin:
 
     def __init__(self, bin_id: int) -> None:
 
-        self.bin_id: int = bin_id
-        self.samples: list[tuple] = []
-        self.calibrated_score = None
+        self.bin_id: int = bin_id  # A unique integer ID for the bin
+        self.samples: list[tuple] = []  # A list of tuple containing the input (probability) and the output (label)
+        self.calibrated_score = None  # Actual proportion of samples that belongs to class 1
+        self.low_prob = None  # lowest probability score in the sample set.
+        self.high_prob = None  # highest probability score in the sample set.
+        self.avg_prob = None  # average of the probability scores of this sample set.
 
     @staticmethod
     def check_values(prob: float, label: int):
@@ -29,8 +33,13 @@ class Bin:
 
         self.samples.append((prob, label))
 
-    def compute_calibrated_score(self) -> None:
-        self.calibrated_score = sum(label for prob, label in self.samples) / len(self.samples)
+    def compute_statistics(self) -> None:
+
+        probs, labels = zip(*self.samples)
+
+        self.low_prob, self.high_prob = min(probs), max(probs)
+
+        self.avg_prob, self.calibrated_score = mean(probs), mean(labels)
 
 
 class HistogramBinningCalibrator:
@@ -71,3 +80,6 @@ class HistogramBinningCalibrator:
         # compute calibrated score for bins
         for _, bin in self.bins.items():
             bin.compute_calibrated_score()
+
+    def predict(self):
+        pass
