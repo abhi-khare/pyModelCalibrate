@@ -6,16 +6,15 @@ This file contains implementation of following uniform partition scheme:
 """
 
 
-def get_uniform_mass_partitions(probs: list, labels: list, partition_num: int, decreasing: bool = False) -> tuple:
+def get_uniform_mass_partitions(samples: list, partition_num: int, decreasing: bool = False) -> tuple:
     """
-    Given a list of probabilities `probs` and a list of class labels `labels`, this function partition the probabilities
+    Given a list of probabilities and the corresponding class labels, this function partition the probabilities
     into `partition_num` equal-mass partitions and return a tuple containing the sorted probabilities, sorted labels,
-    and partition IDs for each probability. The probabilities and labels are sorted in increasing order by default,
+    and partition IDs for each sample. The probabilities and labels are sorted in increasing order by default,
     but this can be changed by setting the `decreasing` parameter to False.
 
     Parameters:
-    - probs (list): A list of probabilities.
-    - labels (list): A list of labels corresponding to the probabilities in `probs`.
+    - samples (list[tuple]): A list of tuple containing probability and the label.
     - partition_num (int): The number of equal-mass partitions to create.
     - decreasing (bool): A flag indicating whether to sort the probabilities and labels in decreasing order. Default is
                         False.
@@ -24,31 +23,27 @@ def get_uniform_mass_partitions(probs: list, labels: list, partition_num: int, d
     - tuple: A tuple containing the sorted probabilities, sorted labels, and partition IDs for each probability.
     """
 
-    samples = [(prob, label) for prob, label in zip(probs, labels)]
-
     samples.sort(key=lambda x: x[0], reverse=decreasing)
-
-    partition_ids = [int(iter / partition_num) for iter in range(len(probs))]
-
     sorted_probs, sorted_labels = zip(*samples)
+
+    partition_ids = [int(_iter / partition_num) for _iter in range(len(samples))]
 
     return sorted_probs, sorted_labels, partition_ids
 
 
-def get_uniform_width_partitions(probs: list, labels: list, width: float = None, partition_num: int = None,
+def get_uniform_width_partitions(samples: list, width: float = None, partition_num: int = None,
                                  decreasing: bool = False) -> tuple:
     """
-    Given a list of probabilities `probs` and a list of class labels `labels`, this function partition the probabilities
+    Given a list of probabilities and the corresponding class labels, this function partition the probabilities
     into equal-width partitions and return a tuple containing the sorted probabilities, sorted labels, and partition IDs
-    for each probability. The probabilities and labels are sorted in increasing order by default, but this can be
+    for each sample. The probabilities and labels are sorted in increasing order by default, but this can be
     changed by setting the `decreasing` parameter to False.
 
     By default, it uses width parameter if both width and partition_num is provided, otherwise it computes width if only
     partition_num is provided.
 
     Parameters:
-    - probs (list): A list of probabilities.
-    - labels (list): A list of labels corresponding to the probabilities in `probs`.
+    - samples (list[tuple]): A list of tuple containing probability and the label.
     - partition_num (int): The number of equal-width partitions to create.
     - width (float): width of each partition
     - decreasing (bool): A flag indicating whether to sort the probabilities and labels in decreasing order. Default is
@@ -57,8 +52,6 @@ def get_uniform_width_partitions(probs: list, labels: list, width: float = None,
     Returns:
     - tuple: A tuple containing the sorted probabilities, sorted labels, and partition IDs for each probability.
     """
-
-    samples = [(prob, label) for prob, label in zip(probs, labels)]
 
     samples.sort(key=lambda x: x[0], reverse=decreasing)
 
@@ -71,7 +64,8 @@ def get_uniform_width_partitions(probs: list, labels: list, width: float = None,
     # Compute the width of each partition
     if width is None & partition_num is None:
         raise ValueError(
-            'Either pass width of the partition or the number of partitions in which samples needs to be partitioned')
+            "Either pass width of the partition or the number of partitions in which samples set needs to be / "
+            "partitioned")
     elif width is None:
         partition_width = (max_prob - min_prob) / partition_num
     else:
