@@ -58,7 +58,7 @@ def get_uniform_num_partitions(samples: list, partition_num: int, decreasing: bo
     return sorted_probs, sorted_labels, partition_ids
 
 
-def get_uniform_width_partitions(samples: list, width: float = None,
+def get_uniform_width_partitions(samples: list, width: float,
                                  decreasing: bool = False) -> tuple:
     """
     Given a list of probabilities and the corresponding class labels, this function partition the probabilities
