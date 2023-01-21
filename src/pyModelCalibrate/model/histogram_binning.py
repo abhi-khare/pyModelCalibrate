@@ -26,21 +26,17 @@ class Bin:
 
         self.samples.append((prob, label))
 
-    def compute_statistics(self) -> None:
+    def compute_bin_statistics(self) -> None:
         probs, labels = zip(*self.samples)
 
         self.low_prob, self.high_prob = min(probs), max(probs)
 
         self.avg_prob, self.calibrated_score = mean(probs), mean(labels)
 
-    def merge(self, bin_a):
-        self.samples += bin_a.samples
-        self.compute_statistics()
-
 
 class HistogramBinningCalibrator:
 
-    def __init__(self, probs: list, labels: list, partition_scheme: str = 'mass'):
+    def __init__(self, probs: list, labels: list, partition_scheme: str = 'mass', **kwargs):
 
         # check for errors
         self.check_errors(probs, labels, partition_scheme)
@@ -48,6 +44,7 @@ class HistogramBinningCalibrator:
         self.probs = probs
         self.labels = labels
         self.partition_scheme = partition_scheme
+        self.params = {key: param for key, param in kwargs.items()}
 
         self.samples = [(prob, label) for prob, label in zip(probs, labels)]
         self.bins = {}
@@ -90,9 +87,11 @@ class HistogramBinningCalibrator:
         # create partition
         probs, labels, part_ids = None, None, None
         if self.partition_scheme == 'mass':
-            probs, labels, part_ids = get_uniform_mass_partitions(samples=self.samples)
+            probs, labels, part_ids = get_uniform_mass_partitions(samples=self.samples, partition_size=self.params['partition_size'])
         elif self.partition_scheme == 'width':
-            probs, labels, part_ids = get_uniform_width_partitions(samples=self.samples)
+            probs, labels, part_ids = get_uniform_width_partitions(samples=self.samples, width=self.params['width'])
+        else:
+            probs, labels, part_ids = get_uniform_num_partitions(samples=self.samples, partition_num=self.params['partition_num'])
 
         # learn bin wise statistics
         for part_id in set(part_ids):
@@ -105,7 +104,7 @@ class HistogramBinningCalibrator:
 
         # compute calibrated score for bins
         for _, bin in self.bins.items():
-            bin.compute_calibrated_score()
+            bin.compute_bin_statistics()
 
         # compute low_bin and calib_score array. This will be used during inference.
         for _, bin in self.bins.items():
@@ -113,7 +112,7 @@ class HistogramBinningCalibrator:
             self.calib_array.append(bin.calibrated_score)
 
     @staticmethod
-    def find_bin_id(self, prob):
+    def find_bin_id(prob):
 
         idx = strict_lower_bound(prob, self.low_array)
         if idx == -1:
