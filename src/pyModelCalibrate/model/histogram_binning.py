@@ -33,6 +33,10 @@ class Bin:
 
         self.avg_prob, self.calibrated_score = mean(probs), mean(labels)
 
+    def merge(self, bin_a):
+        self.samples += bin_a.samples
+        self.compute_statistics()
+
 
 class HistogramBinningCalibrator:
 
