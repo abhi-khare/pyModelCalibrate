@@ -36,7 +36,7 @@ class Bin:
 
 class HistogramBinningCalibrator:
 
-    def __init__(self, probs: list, labels: list, partition_scheme: str = 'mass', **kwargs):
+    def __init__(self, probs: list, labels: list, partition_scheme: str = 'count', **kwargs):
 
         # check for errors
         self.check_errors(probs, labels, partition_scheme)
@@ -124,5 +124,4 @@ class HistogramBinningCalibrator:
     def predict(self, probs):
 
         calibrated_probs = [self.find_bin_id(prob) for prob in probs]
-
         return calibrated_probs
