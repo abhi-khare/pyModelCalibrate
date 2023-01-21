@@ -6,16 +6,16 @@ This file contains implementation of following uniform partition scheme:
 """
 
 
-def get_uniform_mass_partitions(samples: list, partition_num: int, decreasing: bool = False) -> tuple:
+def get_uniform_mass_partitions(samples: list, partition_size: int, decreasing: bool = False) -> tuple:
     """
     Given a list of probabilities and the corresponding class labels, this function partition the probabilities
-    into `partition_num` equal-mass partitions and return a tuple containing the sorted probabilities, sorted labels,
-    and partition IDs for each sample. The probabilities and labels are sorted in increasing order by default,
+    into `partition_num` equal-mass partitions and return a tuple containing the probabilities, labels,
+    and partition IDs for each sample. The samples are sorted in increasing order by default,
     but this can be changed by setting the `decreasing` parameter to False.
 
     Parameters:
     - samples (list[tuple]): A list of tuple containing probability and the label.
-    - partition_num (int): The number of equal-mass partitions to create.
+    - partition_size (int): Number of samples in each bin
     - decreasing (bool): A flag indicating whether to sort the probabilities and labels in decreasing order. Default is
                         False.
 
@@ -26,7 +26,32 @@ def get_uniform_mass_partitions(samples: list, partition_num: int, decreasing: b
     samples.sort(key=lambda x: x[0], reverse=decreasing)
     sorted_probs, sorted_labels = zip(*samples)
 
-    partition_ids = [int(_iter / partition_num) for _iter in range(len(samples))]
+    partition_ids = [int(_iter / partition_size) for _iter in range(len(samples))]
+
+    return sorted_probs, sorted_labels, partition_ids
+
+
+def get_uniform_num_partitions(samples: list, partition_num: int, decreasing: bool = False) -> tuple:
+    """
+    Given a list of probabilities and the corresponding class labels, this function partition the probabilities
+    into `partition_num` equal-mass partitions and return a tuple containing the probabilities, labels,
+    and partition IDs for each sample. The samples are sorted in increasing order by default,
+    but this can be changed by setting the `decreasing` parameter to False.
+
+    Parameters:
+    - samples (list[tuple]): A list of tuple containing probability and the label.
+    - partition_num (int): Number of samples in each bin
+    - decreasing (bool): A flag indicating whether to sort the probabilities and labels in decreasing order. Default is
+                        False.
+
+    Returns:
+    - tuple: A tuple containing the sorted probabilities, sorted labels, and partition IDs for each probability.
+    """
+
+    samples.sort(key=lambda x: x[0], reverse=decreasing)
+    sorted_probs, sorted_labels = zip(*samples)
+
+    partition_ids = [int(_iter / len(samples))*partition_num for _iter in range(len(samples))]
 
     return sorted_probs, sorted_labels, partition_ids
 
@@ -35,8 +60,8 @@ def get_uniform_width_partitions(samples: list, width: float = None, partition_n
                                  decreasing: bool = False) -> tuple:
     """
     Given a list of probabilities and the corresponding class labels, this function partition the probabilities
-    into equal-width partitions and return a tuple containing the sorted probabilities, sorted labels, and partition IDs
-    for each sample. The probabilities and labels are sorted in increasing order by default, but this can be
+    into equal-width partitions and return a tuple containing the probabilities, labels, and partition IDs
+    for each sample. The samples are sorted in increasing order by default, but this can be
     changed by setting the `decreasing` parameter to False.
 
     By default, it uses width parameter if both width and partition_num is provided, otherwise it computes width if only
