@@ -4,8 +4,8 @@ pyModelCalibrate is an easy-to-use package to calibrate any deep learning/ machi
 
 # Model list
 
-Model | Paper |
+Model | Paper 
 --- | --- | 
-Histogram Binning |  |
-Isotonic Regression |  |
-Platt Scaling |  |
+Histogram Binning |  
+Isotonic Regression | [Transforming classifier scores into accurate multiclass probability estimates.](https://dl.acm.org/doi/10.1145/775047.775151) |
+Platt Scaling | [Probabilistic outputs for support vector machines and comparisons to regularized likelihood methods](https://citeseerx.ist.psu.edu/doc_view/pid/42e5ed832d4310ce4378c44d05570439df28a393)|
