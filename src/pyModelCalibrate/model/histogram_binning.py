@@ -1,6 +1,6 @@
 from statistics import mean
-from partition import *
-from utils import strict_lower_bound
+from .partition import *
+from .utils import strict_lower_bound
 
 
 class Bin:
@@ -39,7 +39,7 @@ class HistogramBinningCalibrator:
     def __init__(self, probs: list, labels: list, partition_scheme: str = 'count', **kwargs):
 
         # check for errors
-        self.check_errors(probs, labels, partition_scheme)
+        self.check_errors(probs, labels, partition_scheme, kwargs)
 
         self.partition_scheme = partition_scheme
         self.params = {key: param for key, param in kwargs.items()}
@@ -57,8 +57,8 @@ class HistogramBinningCalibrator:
         assert partition_scheme in ("mass", "width", "count"), \
             "valid partition schemes: mass, width and count"
 
-        assert kwargs.keys() in ("partition_size", "width", "partition_num"), \
-            "Invalid parameter"
+        # assert kwargs.keys() in ("partition_size", "width", "partition_num"), \
+        #    "Invalid parameter"
 
         assert len(probs) == len(labels), \
             f'Size mismatch. probs array contains {len(probs)} elements \
@@ -125,3 +125,6 @@ class HistogramBinningCalibrator:
 
         calibrated_probs = [self.find_bin_id(prob) for prob in probs]
         return calibrated_probs
+
+    def get_model(self):
+        return self.low_array, self.calib_array

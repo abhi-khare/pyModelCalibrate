@@ -1,6 +1,6 @@
 from statistics import mean
-from partition import *
-from utils import strict_lower_bound
+from .partition import *
+from .utils import strict_lower_bound
 
 
 class Bin:
@@ -152,3 +152,6 @@ class IsotonicRegressionCalibrator:
 
         calibrated_probs = [self.find_bin_id(prob) for prob in probs]
         return calibrated_probs
+
+    def get_model(self):
+        return self.low_array, self.calib_array
