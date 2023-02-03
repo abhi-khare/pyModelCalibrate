@@ -61,8 +61,9 @@ class IsotonicRegressionCalibrator:
         assert partition_scheme in ("mass", "width", "count"), \
             "valid partition schemes: mass, width and count"
 
-        assert kwargs.keys() in ("partition_size", "width", "partition_num"), \
-            "Invalid parameter"
+        for keys in kwargs.keys():
+            assert keys in ("partition_size", "width", "partition_num"), \
+                "Invalid parameter"
 
         assert len(probs) == len(labels), \
             f'Size mismatch. probs array contains {len(probs)} elements \
